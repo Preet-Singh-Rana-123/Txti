@@ -1,7 +1,9 @@
+#include "../include/textEditor.hpp"
 #include <iostream>
 using namespace std;
 
 int main(){
-    cout<<"Hello wellcome to my text editor.\n";
+    TextEditor t;
+    t.openScreen();
     return 0;
 }

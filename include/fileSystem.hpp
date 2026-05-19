@@ -3,4 +3,8 @@
 
 class FileSystem{
     std::string filePath;
+
+public:
+    void openFile(string filePath){
+    }
 };
