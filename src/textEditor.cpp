@@ -69,11 +69,35 @@ void TextEditor::handleInput(int ch){
             break;
         }
         case KEY_UP:{
+            this->c.y--;
+            if(this->data[this->c.y].size() < this->c.x){
+                this->c.x = this->data[this->c.y].size();
+            }
+            move(this->c.y,this->c.x);
+            refresh();
             break;
         }
-        case KEY_DOWN:{}
-        case KEY_LEFT:{}
-        case KEY_RIGHT:{}
+        case KEY_DOWN:{
+            this->c.y++;
+            if(this->data[this->c.y].size() < this->c.x){
+                this->c.x = this->data[this->c.y].size();
+            }
+            move(this->c.y, this->c.x);
+            refresh();
+            break;
+        }
+        case KEY_LEFT:{
+            this->c.x--;
+            move(this->c.y,this->c.x);
+            refresh();
+            break;
+        }
+        case KEY_RIGHT:{
+            this->c.x++;
+            move(this->c.y,this->c.x);
+            refresh();
+            break;
+        }
         case '\n':{
             data.push_back("");
             this->c.x = 0;
