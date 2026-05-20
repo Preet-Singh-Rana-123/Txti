@@ -62,7 +62,10 @@ void TextEditor::handleInput(int ch){
             this->saveData();
             break;
         }
-        case KEY_BACKSPACE:{
+        case KEY_BACKSPACE:
+        case 127:
+        case 8:{
+            this->deleteChar();
             break;
         }
         case KEY_UP:{
@@ -104,4 +107,27 @@ void TextEditor::saveData(){
     this->file.flush();
 
     std::filesystem::resize_file(this->fileName, newSize);
+}
+
+void TextEditor::deleteChar(){
+    if(this->c.x > 0){
+        this->data[this->c.y].erase(this->c.x - 1,1);
+        this->c.x--;
+
+        move(this->c.y,this->c.x);
+        clrtoeol();
+        printw("%s",data[this->c.y].substr(this->c.x).c_str());
+    }else if(this->c.y > 0){
+        std::string currentLine = this->data[this->c.y];
+        this->c.y--;
+        this->c.x = data[this->c.y].size();
+        this->data[this->c.y] += currentLine;
+
+        move(this->c.y,this->c.x);
+        refresh();
+        clear();
+        for(std::string& line : data){
+            printw("%s\n",line.c_str());
+        }
+    }
 }

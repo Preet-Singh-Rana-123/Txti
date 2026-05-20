@@ -23,4 +23,5 @@ public:
     void openScreen();
     void handleInput(int ch);
     void saveData();
+    void deleteChar();
 };
