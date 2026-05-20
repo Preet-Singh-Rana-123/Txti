@@ -9,6 +9,6 @@ class TextEditor{
     std::vector<std::string> data;
 
 public:
-    TextEditor();
+    TextEditor(std::string fileName);
     void openScreen();
 };

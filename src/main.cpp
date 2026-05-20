@@ -3,7 +3,7 @@
 using namespace std;
 
 int main(){
-    TextEditor t;
+    TextEditor t("../sample.txt");
     t.openScreen();
     return 0;
 }
