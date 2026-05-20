@@ -1,4 +1,5 @@
 #include "../include/textEditor.hpp"
+#include <filesystem>
 #include <fstream>
 #include <ncurses.h>
 #include <string>
@@ -53,13 +54,54 @@ void TextEditor::openScreen(){
 
 void TextEditor::handleInput(int ch){
     switch (ch) {
-        case CTRL('q'):{
+        case CTRL('x'):{
             this->isOpen = false;
+            break;
+        }
+        case CTRL('a'):{
+            this->saveData();
+            break;
         }
         case KEY_BACKSPACE:{
+            break;
+        }
+        case KEY_UP:{
+            break;
+        }
+        case KEY_DOWN:{}
+        case KEY_LEFT:{}
+        case KEY_RIGHT:{}
+        case '\n':{
+            data.push_back("");
+            this->c.x = 0;
+            this->c.y++;
+            move(this->c.y,this->c.x);
+            refresh();
+            break;
         }
         default:{
             printw("%c",ch);
+            this->c.x++;
+            data[data.size()-1].push_back(ch);
+            break;
         }
     }
+}
+
+void TextEditor::saveData(){
+    if(!this->file.is_open()) return;
+
+    this->file.clear();
+
+    this->file.seekp(0,std::ios::beg);
+
+    for(std::string &line : this->data){
+        this->file << line <<"\n";
+    }
+
+    std::streampos newSize = this->file.tellp();
+
+    this->file.flush();
+
+    std::filesystem::resize_file(this->fileName, newSize);
 }

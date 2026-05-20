@@ -22,4 +22,5 @@ public:
     TextEditor(std::string fileName);
     void openScreen();
     void handleInput(int ch);
+    void saveData();
 };
