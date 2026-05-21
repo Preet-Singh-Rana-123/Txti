@@ -131,9 +131,12 @@ void TextEditor::handleInput(int ch){
             break;
         }
         default:{
+            clrtoeol();
             printw("%c",ch);
+            this->data[this->c.y].insert(this->c.x,1,ch);
             this->c.x++;
-            data[data.size()-1].push_back(ch);
+            printw("%s", data[this->c.y].substr(this->c.x).c_str());
+            move(this->c.y,this->c.x);
             break;
         }
     }
@@ -165,17 +168,23 @@ void TextEditor::deleteChar(){
         move(this->c.y,this->c.x);
         clrtoeol();
         printw("%s",data[this->c.y].substr(this->c.x).c_str());
+        move(this->c.y,this->c.x);
     }else if(this->c.y > 0){
         std::string currentLine = this->data[this->c.y];
+        this->data.erase(this->data.begin() + this->c.y);
         this->c.y--;
         this->c.x = data[this->c.y].size();
         this->data[this->c.y] += currentLine;
 
-        move(this->c.y,this->c.x);
-        refresh();
-        clear();
-        for(std::string& line : data){
-            printw("%s\n",line.c_str());
+        move(this->c.y, 0);
+        // for(int i=this->c.y+1; i < this->data.size(); i++){
+        //     this->data[i] = this->data[i+1];
+        // }
+        //
+        clrtobot();
+        for(int i=this->c.y; i < this->data.size(); i++){
+            printw("%s", this->data[i].c_str());
         }
+        move(this->c.y,this->c.x);
     }
 }
