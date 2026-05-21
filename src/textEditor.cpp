@@ -69,6 +69,11 @@ void TextEditor::handleInput(int ch){
             break;
         }
         case KEY_UP:{
+            if(this->c.y == 0){
+                this->c.y = 0;
+                move(this->c.y,this->c.x);
+                break;
+            }
             this->c.y--;
             if(this->data[this->c.y].size() < this->c.x){
                 this->c.x = this->data[this->c.y].size();
@@ -78,6 +83,11 @@ void TextEditor::handleInput(int ch){
             break;
         }
         case KEY_DOWN:{
+            if(this->c.y == this->data.size() - 1){
+                this->c.y = this->data.size()-1;
+                move(this->c.y,this->c.x);
+                break;
+            }
             this->c.y++;
             if(this->data[this->c.y].size() < this->c.x){
                 this->c.x = this->data[this->c.y].size();
@@ -87,12 +97,26 @@ void TextEditor::handleInput(int ch){
             break;
         }
         case KEY_LEFT:{
+            if(this->c.x == 0){
+                this->c.y--;
+                this->c.x = this->data[this->c.y].size();
+                move(this->c.y,this->c.x);
+                refresh();
+                break;
+            }
             this->c.x--;
             move(this->c.y,this->c.x);
             refresh();
             break;
         }
         case KEY_RIGHT:{
+            if(this->c.x == this->data[this->c.y].size()){
+                this->c.y++;
+                this->c.x = 0;
+                move(this->c.y,this->c.x);
+                refresh();
+                break;
+            }
             this->c.x++;
             move(this->c.y,this->c.x);
             refresh();
