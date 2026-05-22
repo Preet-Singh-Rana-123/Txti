@@ -123,9 +123,17 @@ void TextEditor::handleInput(int ch){
             break;
         }
         case '\n':{
-            data.push_back("");
-            this->c.x = 0;
+            std::string nextLine = this->data[this->c.y].substr(this->c.x);
+            this->data[this->c.y].erase(this->c.x);
+            clrtoeol();
             this->c.y++;
+            this->c.x = 0;
+            this->data.insert(this->data.begin() + this->c.y,std::move(nextLine));
+            move(this->c.y, 0);
+            clrtobot();
+            for(int i=this->c.y; i < this->data.size(); i++){
+                printw("%s\n", this->data[i].c_str());
+            }
             move(this->c.y,this->c.x);
             refresh();
             break;
@@ -177,10 +185,6 @@ void TextEditor::deleteChar(){
         this->data[this->c.y] += currentLine;
 
         move(this->c.y, 0);
-        // for(int i=this->c.y+1; i < this->data.size(); i++){
-        //     this->data[i] = this->data[i+1];
-        // }
-        //
         clrtobot();
         for(int i=this->c.y; i < this->data.size(); i++){
             printw("%s", this->data[i].c_str());
