@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <ncurses.h>
 
 #ifndef CTRL
 #define CTRL(c) ((c) & 0x1f)
@@ -17,6 +18,8 @@ class TextEditor{
     std::vector<std::string> data;
     Cursor c;
     bool isOpen;
+    WINDOW* headerWin;
+    WINDOW* textWin;
 
 public:
     TextEditor(std::string fileName);
@@ -24,4 +27,6 @@ public:
     void handleInput(int ch);
     void saveData();
     void deleteChar();
+
+    // helper function
 };
