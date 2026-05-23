@@ -29,4 +29,6 @@ public:
     void deleteChar();
 
     // helper function
+
+    void print_in_middle(WINDOW *win);
 };

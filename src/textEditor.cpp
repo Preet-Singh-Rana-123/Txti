@@ -42,14 +42,14 @@ void TextEditor::openScreen(){
     raw();
     keypad(stdscr, true);
     noecho();
+    refresh();
 
     this->headerWin = newwin(1,COLS,0,0);
     this->textWin = newwin(LINES-1,COLS,1,0);
 
     keypad(this->textWin, true);
 
-    mvwprintw(this->headerWin,0,0,"%s\n",this->fileName.c_str());
-    wrefresh(this->headerWin);
+    this->print_in_middle(headerWin);
 
     for(std::string line : this->data){
         wprintw(this->textWin,"%s\n",line.c_str());
@@ -209,3 +209,18 @@ void TextEditor::deleteChar(){
     }
 }
 
+
+void TextEditor::print_in_middle(WINDOW *win){
+    if (win == nullptr) return;
+
+    int winWidth = getmaxx(win);
+    int length = this->fileName.size();
+    int startX = (winWidth - length)/2;
+
+    if(startX<0) startX = 0;
+
+    wattron(win, A_BOLD);
+    mvwprintw(win,0,startX,"-- %s --",this->fileName.c_str());
+    wattroff(win, A_BOLD);
+    wrefresh(win);
+}
