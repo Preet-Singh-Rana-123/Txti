@@ -2,8 +2,8 @@
 #include <iostream>
 using namespace std;
 
-int main(){
-    TextEditor t("../sample.txt");
+int main(int argc, char* argv[]){
+    TextEditor t(argv[1]);
     t.openScreen();
     return 0;
 }
