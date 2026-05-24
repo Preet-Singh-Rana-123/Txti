@@ -164,6 +164,9 @@ void TextEditor::handleInput(int ch){
             this->c.x = 0;
             this->data.insert(this->data.begin() + this->c.y,std::move(nextLine));
             wmove(this->textWin,this->c.y, 0);
+            mvwprintw(this->lineCountWin,line_num-1,0,"%2d",line_num);
+            wrefresh(this->lineCountWin);
+            this->line_num++;
             wclrtobot(this->textWin);
             for(int i=this->c.y; i < this->data.size(); i++){
                 wprintw(this->textWin,"%s\n", this->data[i].c_str());
