@@ -220,6 +220,13 @@ void TextEditor::deleteChar(){
         this->c.y--;
         this->c.x = data[this->c.y].size();
         this->data[this->c.y] += currentLine;
+        this->line_num--;
+        wmove(this->lineCountWin,this->c.y,0);
+        wclrtobot(this->lineCountWin);
+        for(size_t i = this->c.y; i < this->data.size(); i++){
+            mvwprintw(this->lineCountWin, i, 0, "%2d", (int)(i + 1));
+        }
+        wrefresh(this->lineCountWin);
 
         wmove(this->textWin,this->c.y, 0);
         wclrtobot(this->textWin);
