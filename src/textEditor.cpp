@@ -9,6 +9,9 @@ TextEditor::TextEditor(std::string fileName){
     this->isOpen = true;
     this->textWin = nullptr;
     this->headerWin = nullptr;
+    this->footerWin = nullptr;
+    this->lineCountWin = nullptr;
+    this->line_num = 1;
 
     if(!file.is_open()){
         std::ofstream createNewFile(fileName);
@@ -44,16 +47,28 @@ void TextEditor::openScreen(){
     noecho();
     refresh();
 
-    this->headerWin = newwin(1,COLS,0,0);
-    this->textWin = newwin(LINES-1,COLS,1,0);
+    this->headerWin = newwin(3,COLS,0,0);
+    this->lineCountWin = newwin(LINES-7,4,3,0);
+    this->textWin = newwin(LINES-7,COLS-4,3,4);
+    this->footerWin = newwin(4,COLS,LINES-4,0);
 
     keypad(this->textWin, true);
 
+    box(this->headerWin,0,0);
     this->print_in_middle(headerWin);
 
-    for(std::string line : this->data){
+    box(this->footerWin,0,0);
+    mvwprintw(this->footerWin, 1,2, "Footer Window");
+    wrefresh(this->footerWin);
+
+    for(const std::string &line : this->data){
+        mvwprintw(this->lineCountWin, this->line_num-1,0,"%2d",line_num);
+
         wprintw(this->textWin,"%s\n",line.c_str());
+        this->line_num++;
     }
+
+    wrefresh(this->lineCountWin);
 
     wmove(this->textWin,this->c.y,this->c.x);
     wrefresh(this->textWin);
@@ -63,8 +78,11 @@ void TextEditor::openScreen(){
         this->handleInput(ch);
     }
 
+
     delwin(this->headerWin);
     delwin(this->textWin);
+    delwin(this->footerWin);
+    delwin(this->lineCountWin);
     endwin();
 }
 
@@ -220,7 +238,7 @@ void TextEditor::print_in_middle(WINDOW *win){
     if(startX<0) startX = 0;
 
     wattron(win, A_BOLD);
-    mvwprintw(win,0,startX,"-- %s --",this->fileName.c_str());
+    mvwprintw(win,1,startX,"-- %s --",this->fileName.c_str());
     wattroff(win, A_BOLD);
     wrefresh(win);
 }

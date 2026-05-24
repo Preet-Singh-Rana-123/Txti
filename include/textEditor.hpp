@@ -20,6 +20,9 @@ class TextEditor{
     bool isOpen;
     WINDOW* headerWin;
     WINDOW* textWin;
+    WINDOW* footerWin;
+    WINDOW* lineCountWin;
+    int line_num;
 
 public:
     TextEditor(std::string fileName);
