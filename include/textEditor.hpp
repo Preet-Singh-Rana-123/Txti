@@ -30,6 +30,7 @@ public:
     void handleInput(int ch);
     void saveData();
     void deleteChar();
+    void handleFooter();
 
     // helper function
 

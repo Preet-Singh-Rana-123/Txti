@@ -58,7 +58,7 @@ void TextEditor::openScreen(){
     this->print_in_middle(headerWin);
 
     box(this->footerWin,0,0);
-    mvwprintw(this->footerWin, 1,2, "Footer Window");
+    handleFooter();
     wrefresh(this->footerWin);
 
     for(const std::string &line : this->data){
@@ -244,4 +244,12 @@ void TextEditor::print_in_middle(WINDOW *win){
     mvwprintw(win,1,startX,"-- %s --",this->fileName.c_str());
     wattroff(win, A_BOLD);
     wrefresh(win);
+}
+
+void TextEditor::handleFooter(){
+    wattron(this->footerWin, A_BOLD);
+    mvwprintw(this->footerWin, 1,2, "Footer Window:- ");
+    mvwprintw(this->footerWin, 1,18, "| CTRL+x -> exit");
+    mvwprintw(this->footerWin, 1,2*18+2, "| CTRL+a -> save");
+    wattroff(this->footerWin, A_BOLD);
 }
