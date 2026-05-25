@@ -14,6 +14,7 @@ struct Cursor {
 
 class TextEditor{
     std::string fileName;
+    std::string displayName;
     std::fstream file;
     std::vector<std::string> data;
     Cursor c;
@@ -32,6 +33,7 @@ public:
     void deleteChar();
     void handleFooter();
     void deleteLine();
+    void deleteWord();
 
     // helper function
 

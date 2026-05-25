@@ -4,7 +4,8 @@
 #include <string>
 
 TextEditor::TextEditor(std::string fileName){
-    this->fileName = std::filesystem::path(fileName).filename().string();
+    this->fileName = fileName;
+    this->displayName = std::filesystem::path(fileName).filename().string();
     this->file.open(fileName, std::ios::in | std::ios::out);
     this->isOpen = true;
     this->textWin = nullptr;
@@ -106,6 +107,11 @@ void TextEditor::handleInput(int ch){
             this->deleteChar();
             break;
         }
+        case CTRL('w'):
+        case CTRL(KEY_BACKSPACE):{
+            this->deleteWord();
+            break;
+        }
         case KEY_UP:{
             if(this->c.y == 0){
                 this->c.y = 0;
@@ -192,21 +198,21 @@ void TextEditor::handleInput(int ch){
 }
 
 void TextEditor::saveData(){
-    if(!this->file.is_open()) return;
-
-    this->file.clear();
-
-    this->file.seekp(0,std::ios::beg);
-
-    for(std::string &line : this->data){
-        this->file << line <<"\n";
+    if(this->file.is_open()) {
+        this->file.close();
     }
 
-    std::streampos newSize = this->file.tellp();
+    this->file.open(this->fileName, std::ios::out | std::ios::trunc);
+    if(!this->file.is_open()) return;
+
+    for(std::string &line : this->data){
+        this->file << line << "\n";
+    }
 
     this->file.flush();
+    this->file.close();
 
-    std::filesystem::resize_file(this->fileName, newSize);
+    this->file.open(this->fileName, std::ios::in | std::ios::out);
 }
 
 void TextEditor::deleteChar(){
@@ -279,17 +285,44 @@ void TextEditor::deleteLine(){
     wrefresh(this->textWin);
 }
 
+void TextEditor::deleteWord(){
+    int end = this->c.x;
+    int start = this->c.x;
+
+    if(start == 0){
+        deleteChar();
+        return;
+    }
+
+    while(start > 0 && this->data[this->c.y][start-1] != ' '){
+        start--;
+    }
+
+    if (start == end && end > 0) {
+        start--;
+    }
+
+    this->data[this->c.y].erase(this->data[this->c.y].begin()+start,this->data[this->c.y].begin()+end);
+
+    this->c.x = start;
+    wmove(this->textWin,this->c.y,this->c.x);
+    wclrtoeol(this->textWin);
+    wprintw(this->textWin,"%s",data[this->c.y].substr(this->c.x).c_str());
+    wmove(this->textWin,this->c.y,this->c.x);
+    wrefresh(this->textWin);
+}
+
 void TextEditor::print_in_middle(WINDOW *win){
     if (win == nullptr) return;
 
     int winWidth = getmaxx(win);
-    int length = this->fileName.size();
+    int length = this->displayName.size();
     int startX = (winWidth - length)/2;
 
     if(startX<0) startX = 0;
 
     wattron(win, A_BOLD);
-    mvwprintw(win,1,startX,"-- %s --",this->fileName.c_str());
+    mvwprintw(win,1,startX,"-- %s --",this->displayName.c_str());
     wattroff(win, A_BOLD);
     wrefresh(win);
 }
