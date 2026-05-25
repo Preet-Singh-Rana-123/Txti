@@ -96,6 +96,10 @@ void TextEditor::handleInput(int ch){
             this->saveData();
             break;
         }
+        case CTRL('d'):{
+            this->deleteLine();
+            break;
+        }
         case KEY_BACKSPACE:
         case 127:
         case 8:{
@@ -237,6 +241,25 @@ void TextEditor::deleteChar(){
     }
 }
 
+void TextEditor::deleteLine(){
+    this->data.erase(this->data.begin() + this->c.y);
+    if(this->c.x > this->data[this->c.y].size()){
+        this->c.x = this->data[this->c.y].size();
+    }
+    this->line_num--;
+    wmove(this->lineCountWin,this->c.y,0);
+    wclrtobot(this->lineCountWin);
+    for(size_t i = this->c.y; i < this->data.size(); i++){
+        mvwprintw(this->lineCountWin, i, 0, "%2d", (int)(i + 1));
+    }
+    wrefresh(this->lineCountWin);
+    wmove(this->textWin,this->c.y, 0);
+    wclrtobot(this->textWin);
+    for(int i=this->c.y; i < this->data.size(); i++){
+        wprintw(this->textWin,"%s\n", this->data[i].c_str());
+    }
+    wmove(this->textWin,this->c.y,this->c.x);
+}
 
 void TextEditor::print_in_middle(WINDOW *win){
     if (win == nullptr) return;

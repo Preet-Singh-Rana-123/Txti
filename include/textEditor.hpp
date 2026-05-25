@@ -31,6 +31,7 @@ public:
     void saveData();
     void deleteChar();
     void handleFooter();
+    void deleteLine();
 
     // helper function
 
