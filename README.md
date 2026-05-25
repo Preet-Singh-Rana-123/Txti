@@ -22,7 +22,6 @@ A lightweight terminal-based text editor built from scratch in C++ using the ncu
 
 - [ ] Delete current line
 - [ ] Delete word (forward/backward)
-- [ ] Copy and Paste feature
 - [ ] Udo and Redo Operations
 - [ ] Configuration menu for UI customization
 - [ ] Integrated file system browser
