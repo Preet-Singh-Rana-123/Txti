@@ -243,22 +243,40 @@ void TextEditor::deleteChar(){
 
 void TextEditor::deleteLine(){
     this->data.erase(this->data.begin() + this->c.y);
+    this->line_num--;
+
+    if(this->data.empty()){
+        this->c.x = 0;
+        this->c.y = 0;
+
+        wclear(this->textWin);
+        wclear(this->lineCountWin);
+        wrefresh(this->textWin);
+        wrefresh(this->lineCountWin);
+        return;
+    }
+
+    if (this->c.y >= this->data.size()) {
+        this->c.y = this->data.size() - 1;
+    }
     if(this->c.x > this->data[this->c.y].size()){
         this->c.x = this->data[this->c.y].size();
     }
-    this->line_num--;
+
     wmove(this->lineCountWin,this->c.y,0);
     wclrtobot(this->lineCountWin);
     for(size_t i = this->c.y; i < this->data.size(); i++){
         mvwprintw(this->lineCountWin, i, 0, "%2d", (int)(i + 1));
     }
     wrefresh(this->lineCountWin);
+
     wmove(this->textWin,this->c.y, 0);
     wclrtobot(this->textWin);
     for(int i=this->c.y; i < this->data.size(); i++){
         wprintw(this->textWin,"%s\n", this->data[i].c_str());
     }
     wmove(this->textWin,this->c.y,this->c.x);
+    wrefresh(this->textWin);
 }
 
 void TextEditor::print_in_middle(WINDOW *win){
