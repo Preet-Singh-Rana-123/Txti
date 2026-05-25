@@ -20,8 +20,8 @@ A lightweight terminal-based text editor built from scratch in C++ using the ncu
 
 ## Planned Features
 
-- [ ] Delete current line
-- [ ] Delete word (forward/backward)
+- [x] Delete current line
+- [x] Delete word (forward/backward)
 - [ ] Udo and Redo Operations
 - [ ] Configuration menu for UI customization
 - [ ] Integrated file system browser
