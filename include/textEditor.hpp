@@ -34,6 +34,7 @@ public:
     void handleFooter();
     void deleteLine();
     void deleteWord();
+    void undoChanges();
 
     // helper function
 

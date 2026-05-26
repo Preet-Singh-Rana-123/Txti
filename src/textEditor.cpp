@@ -312,6 +312,9 @@ void TextEditor::deleteWord(){
     wrefresh(this->textWin);
 }
 
+void TextEditor::undoChanges(){
+}
+
 void TextEditor::print_in_middle(WINDOW *win){
     if (win == nullptr) return;
 
@@ -332,5 +335,7 @@ void TextEditor::handleFooter(){
     mvwprintw(this->footerWin, 1,2, "Footer Window:- ");
     mvwprintw(this->footerWin, 1,18, "| CTRL+x -> exit");
     mvwprintw(this->footerWin, 1,2*18+2, "| CTRL+a -> save");
+    mvwprintw(this->footerWin, 1,3*18+2, "| CTRL+d -> delete line");
+    mvwprintw(this->footerWin, 1,4*20+2, "| CTRL+w -> delete word");
     wattroff(this->footerWin, A_BOLD);
 }
