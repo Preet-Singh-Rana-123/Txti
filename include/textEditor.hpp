@@ -1,5 +1,7 @@
 #pragma once
+#include <chrono>
 #include <fstream>
+#include <stack>
 #include <string>
 #include <vector>
 #include <ncurses.h>
@@ -9,6 +11,17 @@
 #endif // !DEBUG
 
 struct Cursor {
+    int x,y;
+};
+
+enum class ActionType{
+    INSERT_TEXT,
+    DELETE_TEXT,
+};
+
+struct UndoAction{
+    
+    std::string text;
     int x,y;
 };
 
@@ -24,6 +37,16 @@ class TextEditor{
     WINDOW* footerWin;
     WINDOW* lineCountWin;
     int line_num;
+    
+    // undo and redo
+    std::stack<UndoAction> undoStack;
+
+    std::string batchText;
+    int batchX;
+    int batchY;
+
+    std::chrono::steady_clock::time_point lastKeyPressTime;
+    const std::chrono::milliseconds batchTimeout{3000};
 
 public:
     TextEditor(std::string fileName);
