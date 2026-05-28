@@ -586,5 +586,7 @@ void TextEditor::handleFooter() {
   mvwprintw(this->footerWin, 1, 2 * 18 + 2, "| CTRL+a -> save");
   mvwprintw(this->footerWin, 1, 3 * 18 + 2, "| CTRL+d -> delete line");
   mvwprintw(this->footerWin, 1, 4 * 20 + 2, "| CTRL+w -> delete word");
+  mvwprintw(this->footerWin, 2, 18, "| CTRL+z -> undo");
+  mvwprintw(this->footerWin, 2, 2 * 18 + 2, "| CTRL+y -> redo");
   wattroff(this->footerWin, A_BOLD);
 }
