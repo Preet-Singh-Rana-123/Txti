@@ -101,17 +101,20 @@ void TextEditor::handleInput(int ch){
             break;
         }
         case CTRL('d'):{
+            this->pushTypedBatch();
             this->deleteLine();
             break;
         }
         case KEY_BACKSPACE:
         case 127:
         case 8:{
+            this->pushTypedBatch();
             this->deleteChar();
             break;
         }
         case CTRL('w'):
         case CTRL(KEY_BACKSPACE):{
+            this->pushTypedBatch();
             this->deleteWord();
             break;
         }
@@ -241,6 +244,8 @@ void TextEditor::saveData(){
 
 void TextEditor::deleteChar(){
     if(this->c.x > 0){
+        std::string textToBeDeleted = this->data[c.y].substr(this->c.x-1,1);
+        this->recordStructuralAction(ActionType::DELETE_TEXT, textToBeDeleted, this->c.x-1, this->c.y);
         this->data[this->c.y].erase(this->c.x - 1,1);
         this->c.x--;
 
@@ -328,6 +333,9 @@ void TextEditor::deleteWord(){
     if (start == end && end > 0) {
         start--;
     }
+    
+    std::string textToBeDeleted = this->data[c.y].substr(start,end-start);
+    this->recordStructuralAction(ActionType::DELETE_TEXT, textToBeDeleted, start, this->c.y);
 
     this->data[this->c.y].erase(this->data[this->c.y].begin()+start,this->data[this->c.y].begin()+end);
 
