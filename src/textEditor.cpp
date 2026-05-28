@@ -1,4 +1,5 @@
 #include "../include/textEditor.hpp"
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -90,10 +91,12 @@ void TextEditor::openScreen(){
 void TextEditor::handleInput(int ch){
     switch (ch) {
         case CTRL('x'):{
+            this->pushTypedBatch();
             this->isOpen = false;
             break;
         }
         case CTRL('a'):{
+            this->pushTypedBatch();
             this->saveData();
             break;
         }
@@ -110,6 +113,10 @@ void TextEditor::handleInput(int ch){
         case CTRL('w'):
         case CTRL(KEY_BACKSPACE):{
             this->deleteWord();
+            break;
+        }
+        case CTRL('z'):{
+            this->undoChanges();
             break;
         }
         case KEY_UP:{
@@ -186,12 +193,29 @@ void TextEditor::handleInput(int ch){
             break;
         }
         default:{
-            clrtoeol();
-            wprintw(this->textWin,"%c",ch);
-            this->data[this->c.y].insert(this->c.x,1,ch);
-            this->c.x++;
-            wprintw(this->textWin,"%s", data[this->c.y].substr(this->c.x).c_str());
-            wmove(this->textWin,this->c.y,this->c.x);
+            if(ch >= 32 && ch <= 126){
+                auto currentTime = std::chrono::steady_clock::now();
+                auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - this->lastKeyPressTime);
+
+                if(elapsed > batchTimeout){
+                    this->pushTypedBatch();
+                }
+
+                if(this->batchText.empty()){
+                    this->batchX = this->c.x;
+                    this->batchY = this->c.y;
+                }
+
+                this->batchText += static_cast<char>(ch);
+                this->lastKeyPressTime = currentTime;
+                
+                wclrtoeol(this->textWin);
+                wprintw(this->textWin,"%c",ch);
+                this->data[this->c.y].insert(this->c.x,1,ch);
+                this->c.x++;
+                wprintw(this->textWin,"%s", data[this->c.y].substr(this->c.x).c_str());
+                wmove(this->textWin,this->c.y,this->c.x);
+            }
             break;
         }
     }
@@ -248,6 +272,9 @@ void TextEditor::deleteChar(){
 }
 
 void TextEditor::deleteLine(){
+    std::string textToBeDeleted = this->data[c.y];
+    this->recordStructuralAction(ActionType::DELETE_TEXT, textToBeDeleted, 0, this->c.y);
+
     this->data.erase(this->data.begin() + this->c.y);
     this->line_num--;
 
@@ -313,6 +340,65 @@ void TextEditor::deleteWord(){
 }
 
 void TextEditor::undoChanges(){
+    this->pushTypedBatch();
+
+    if(this->undoStack.empty()){
+        return;
+    }
+
+    UndoAction action = undoStack.top();
+    undoStack.pop();
+
+    switch (action.type) {
+        case ActionType::INSERT_TEXT: {
+            if(action.y < this->data.size()){
+                this->data[action.y].erase(action.x, action.text.length());
+                this->c.x = action.x;
+                this->c.y = action.y;
+            }
+            break;
+        }
+        case ActionType::DELETE_TEXT: {
+            if(action.y < this->data.size()){
+                data[action.y].insert(action.x, action.text);
+            }else{
+                data.push_back(action.text);
+            }
+
+            this->c.x = action.x;
+            this->c.y = action.y;
+            break;
+        }
+    }
+
+    wclear(this->lineCountWin);
+    wclear(this->textWin);
+
+    this->line_num = 1;
+    for(const std::string &line : this->data){
+        mvwprintw(this->lineCountWin, this->line_num-1,0,"%2d",line_num);
+
+        wprintw(this->textWin,"%s\n",line.c_str());
+        this->line_num++;
+    }
+
+    wmove(this->textWin, this->c.y, this->c.x);
+
+    wrefresh(this->lineCountWin);
+    wrefresh(this->textWin);
+}
+
+void TextEditor::pushTypedBatch(){
+    if(!this->batchText.empty()){
+        undoStack.push({ActionType::INSERT_TEXT, this->batchText, this->batchX,this->batchY});
+        this->batchText = "";
+    }
+}
+
+void TextEditor::recordStructuralAction(ActionType type, const std::string& text, int targetX, int targetY){
+    this->pushTypedBatch();
+
+    undoStack.push({type,text,targetX,targetY});
 }
 
 void TextEditor::print_in_middle(WINDOW *win){

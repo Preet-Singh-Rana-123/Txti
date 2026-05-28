@@ -20,7 +20,7 @@ enum class ActionType{
 };
 
 struct UndoAction{
-    
+    ActionType type;
     std::string text;
     int x,y;
 };
@@ -47,6 +47,9 @@ class TextEditor{
 
     std::chrono::steady_clock::time_point lastKeyPressTime;
     const std::chrono::milliseconds batchTimeout{3000};
+
+    void pushTypedBatch();
+    void recordStructuralAction(ActionType type, const std::string& text, int targetX, int targetY);
 
 public:
     TextEditor(std::string fileName);
