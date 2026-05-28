@@ -19,6 +19,7 @@ enum class ActionType{
     DELETE_TEXT,
     SPLIT_LINE,
     MERGE_LINE,
+    DELETE_LINE,
 };
 
 struct UndoAction{

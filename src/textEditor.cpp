@@ -280,8 +280,10 @@ void TextEditor::deleteChar(){
 }
 
 void TextEditor::deleteLine(){
+    if(this->data.empty()) return;
+
     std::string textToBeDeleted = this->data[c.y];
-    this->recordStructuralAction(ActionType::DELETE_TEXT, textToBeDeleted, 0, this->c.y);
+    this->recordStructuralAction(ActionType::DELETE_LINE, textToBeDeleted, 0, this->c.y);
 
     this->data.erase(this->data.begin() + this->c.y);
     this->line_num--;
@@ -401,6 +403,18 @@ void TextEditor::undoChanges(){
 
             this->c.x = 0;
             this->c.y = action.y+1;
+            break;
+        }
+        case ActionType::DELETE_LINE:{
+            if(action.y <= this->data.size()){
+                this->data.insert(this->data.begin() + action.y,action.text);
+            }else{
+                this->data.push_back(action.text);
+            }
+            this->line_num++;
+
+            this->c.x = action.x;
+            this->c.y = action.y;
             break;
         }
     }
