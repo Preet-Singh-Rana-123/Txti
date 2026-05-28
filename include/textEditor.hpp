@@ -17,6 +17,8 @@ struct Cursor {
 enum class ActionType{
     INSERT_TEXT,
     DELETE_TEXT,
+    SPLIT_LINE,
+    MERGE_LINE,
 };
 
 struct UndoAction{

@@ -177,6 +177,9 @@ void TextEditor::handleInput(int ch){
             break;
         }
         case '\n':{
+            std::string textMovedToNextLine = this->data[this->c.y].substr(this->c.x);
+            recordStructuralAction(ActionType::SPLIT_LINE, textMovedToNextLine, this->c.x, this->c.y);
+
             std::string nextLine = this->data[this->c.y].substr(this->c.x);
             this->data[this->c.y].erase(this->c.x);
             wclrtoeol(this->textWin);
@@ -375,6 +378,29 @@ void TextEditor::undoChanges(){
 
             this->c.x = action.x;
             this->c.y = action.y;
+            break;
+        }
+        case ActionType::SPLIT_LINE:{
+            if(action.y+1 < this->data.size()){
+                this->data[action.y] += this->data[action.y + 1];
+                this->data.erase(this->data.begin() + action.y + 1);
+                this->line_num--;
+            }
+            this->c.x = action.x;
+            this->c.y = action.y;
+            break;
+        }
+        case ActionType::MERGE_LINE:{
+            std::string fullLineText = this->data[action.y];
+            std::string remainingLine = fullLineText.substr(0,action.x);
+            std::string restoredLine = fullLineText.substr(action.x);
+
+            this->data[action.y] = remainingLine;
+            this->data.insert(this->data.begin()+action.y+1,restoredLine);
+            this->line_num++;
+
+            this->c.x = 0;
+            this->c.y = action.y+1;
             break;
         }
     }
